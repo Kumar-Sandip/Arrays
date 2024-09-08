@@ -1,0 +1,60 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Project Management</title>  
+    <style>  
+        body { font-family: Arial, sans-serif; }  
+        .container { max-width: 600px; margin: auto; }  
+        input, textarea { width: 100%; margin: 10px 0; }  
+    </style>  
+</head>  
+<body>  
+    <div class="container">  
+        <h1>Project Management</h1>  
+        <form id="projectForm">  
+            <input type="text" id="name" placeholder="Project Name" required />  
+            <textarea id="description" placeholder="Project Description" required></textarea>  
+            <button type="submit">Add Project</button>  
+        </form>  
+        <h2>Projects</h2>  
+        <ul id="projectList"></ul>  
+    </div>  
+
+    <script>  
+        const form = document.getElementById('projectForm');  
+        const projectList = document.getElementById('projectList');  
+
+        form.addEventListener('submit', async (e) => {  
+            e.preventDefault();  
+            const name = document.getElementById('name').value;  
+            const description = document.getElementById('description').value;  
+
+            const response = await fetch('/api/projects', {  
+                method: 'POST',  
+                headers: { 'Content-Type': 'application/json' },  
+                body: JSON.stringify({ name, description }),  
+            });  
+
+            const project = await response.json();  
+            addProjectToList(project);  
+            form.reset();  
+        });  
+
+        const fetchProjects = async () => {  
+            const response = await fetch('/api/projects');  
+            const projects = await response.json();  
+            projects.forEach(addProjectToList);  
+        };  
+
+        const addProjectToList = (project) => {  
+            const li = document.createElement('li');  
+            li.textContent = `${project.name}: ${project.description}`;  
+            projectList.appendChild(li);  
+        };  
+
+        fetchProjects();  
+    </script>  
+</body>  
+</html>
